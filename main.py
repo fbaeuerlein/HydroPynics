@@ -23,21 +23,28 @@ class Switch(SensorActor):
 
 switch = Switch("/switch/fan/01")
 sensor = Sensor("/sensor/temperature/01")
+actor = Actor("/switch/fan/02")
 
 class Daemon(object):
-    def __init__(self, mqtt_host = "localhost"):
+    def __init__(self):
         self.client = MQTTClient.Client()
         self.client.on_message = self.on_message
         self.client.on_connect = self.on_connect
+        self.items = []
+
+    def connect(self, mqtt_host = "localhost"):
         self.client.connect(mqtt_host)
         self.client.loop_start()
 
-    def publish(self, sensor):
-        sensor.publish(self.client)
-        sensor.report_state()
+    def add(self, item):
+        item.client = self.client
+        self.items.append(item)
 
     def on_connect(self, client, userdata, flags, rc):
-        switch.subscribe(client)
+        for i in self.items:
+            # just actors can subscribe for changes
+            if isinstance(i, Actor):
+                i.subscribe(client)
 
     def on_disconnect(self, client, userdata, rc):
         print("Disconnected!")
@@ -46,10 +53,14 @@ class Daemon(object):
         print("Unhandled message received: {}".format(message.payload))
 
 
-daemon = Daemon("localhost")
+daemon = Daemon()
+daemon.connect("localhost")
+daemon.add(switch)
+daemon.add(sensor)
+daemon.add(actor)
 
-schedule.every(5).seconds.do(partial(daemon.publish, switch))
-schedule.every(15).seconds.do(partial(daemon.publish, sensor))
+schedule.every(5).seconds.do(switch.publish)
+schedule.every(15).seconds.do(sensor.publish)
 
 while True:
     schedule.run_pending()

@@ -6,8 +6,6 @@ import logging
 import sys
 from functools import partial
 
-
-
 class NamedBase(object):
     def __init__(self, name):
         self.name = name
@@ -21,14 +19,17 @@ class Sensor(NamedBase):
     def __init__(self, topic : str):
         self.pub_topic = topic + "/state"
         super(Sensor, self).__init__(topic)
+        self.client = None
 
     def get_value(self):
         pass
         #return { "value" : self.value }
 
-    def publish(self, client : MQTTClient.Client ):
-        
-        client.publish(self.pub_topic, payload=json.dumps(self.get_value()))
+    def publish(self):
+        if self.client is None:
+            pass
+        self.client.publish(self.pub_topic, payload=json.dumps(self.get_value()))
+        self.report_state()
     
     def report_state(self):
         self.logger.info("State: '{}'".format(self.get_value()))    
