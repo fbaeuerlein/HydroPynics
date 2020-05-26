@@ -32,7 +32,7 @@ class Publisher(NamedBase):
         self.report_state()
     
     def report_state(self):
-        logger.info("State: '{}'".format(self.get_value()))    
+        logger.info("[{}] State: '{}'".format(self.pub_topic, self.get_value()))    
 
 class Subscriber(NamedBase):
     def __init__(self, topic):
@@ -45,7 +45,7 @@ class Subscriber(NamedBase):
     def on_message(self, client, userdata, message):
         try:
             msg = message.payload.decode('utf-8')
-            logger.info("received: '{}'".format(msg))
+            logger.info("[{}] received: '{}'".format(self.sub_topic, msg))
             self.set_value(json.loads(msg)["value"])
         except Exception as e:
             logger.warning("Failed to decode/parse message: {}".format(e))

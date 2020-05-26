@@ -1,49 +1,46 @@
 import schedule
 import time
-import json
 import logging
 import sys
 from functools import partial
 from MQTT import Publisher, Subscriber, Client
+from DHTSensors import DHT11
+import RPiSensors
+import threading
+import RPi.GPIO as GPIO
+import I2CDevices
 
-class Switch(Publisher, Subscriber):
-    '''
-    Simple fake switch implementation
-    '''
-    def __init__(self, topic_base : str):
-        super(Switch, self).__init__(topic_base)
-        self.value = False
+GPIO.setmode(GPIO.BCM)
 
-    def get_value(self):
-        return self.value
+def exec_threaded(f):
+    threading.Thread(target=f).start()
 
-    def set_value(self, value):
-        self.value = value
+#
+ads_ntc = I2CDevices.ADS1115_NTC()
+ads_ntc.run()
 
-class Temperature(Publisher):
-    def __init__(self, topic_base : str):
-        super(Temperature, self).__init__(topic_base)
-        self.value = 20
-
-    def get_value(self):
-        return self.value
-
-switch = Switch("/switch/fan/01")
-sensor = Temperature("/sensor/temperature/01")
-# actor = Actor("/switch/fan/02")
-
-
+dht11 = DHT11("/sensors/temperature/dht", 17)
+rpi_cpu_temp = RPiSensors.CPUTemperature("/sensors/temperature/cpu")
+rpi_gpio_pump1 = RPiSensors.GPIO("/devices/pump/air", 27, True, GPIO.OUT, False)
+rpi_gpio_pump2 = RPiSensors.GPIO("/devices/pump/circulation", 22, False, GPIO.OUT, True)
+temp_tank = I2CDevices.ADS1115_NTC_ChannelAdapter("/sensors/temperature/tank", ads_ntc, 1)
 mqtt_client = Client()
 
 # first add sensors and actors
-mqtt_client.add(switch)
-mqtt_client.add(sensor)
+mqtt_client.add(dht11)
+mqtt_client.add(rpi_cpu_temp)
+mqtt_client.add(rpi_gpio_pump1)
+mqtt_client.add(rpi_gpio_pump2)
+mqtt_client.add(temp_tank)
 
 # finally connect
 mqtt_client.connect("localhost")
 
-schedule.every(5).seconds.do(switch.publish)
-schedule.every(10).seconds.do(sensor.publish)
+schedule.every(10).seconds.do(exec_threaded, dht11.publish)
+schedule.every(1).seconds.do(exec_threaded, rpi_cpu_temp.publish)
+schedule.every(1).seconds.do(exec_threaded, rpi_gpio_pump1.publish)
+schedule.every(1).seconds.do(exec_threaded, rpi_gpio_pump2.publish)
+schedule.every(5).seconds.do(exec_threaded, temp_tank.publish)
 
 while True:
     schedule.run_pending()
