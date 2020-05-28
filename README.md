@@ -29,6 +29,8 @@ See the nodered folder for the current flow i'm using.
 
 ### Components
 
+#### Electrical parts
+
 - Ground fault circuit interruptor: Merlin Gerin 230V 30mA (This one is very important because we're dealing with water and voltage!)
 - Power supply: Meanwell 50 Watt 24V 
 - Power regulator: LM2596 DC-DC Converter
@@ -39,6 +41,11 @@ See the nodered folder for the current flow i'm using.
 - Raspberry Pi 3B
 - Mounting: DIN Rail
 - Other parts: wires, LEDs, screws, glue, pcbs, etc.
+
+#### Printed parts
+- Raspberry PI DIN rail mount [Thingiverse](https://www.thingiverse.com/thing:2659908)
+- DIN rail mount for the LM2596 (link will follow)
+- DIN rail mount for MW power supply (link will follow)
 
 ### Wiring scheme
 
