@@ -25,6 +25,8 @@ See the nodered folder for the current flow i'm using.
 
 **I'm dealing with 230 V AC and i'm not a professional electrician. All images, schemes, etc. were made to my best knowledge, but i'm not responsible for any damage, harms and losses resulting from the use of my work!**
 
+**I just had this box left, so this is not the way a professional electrical cabinet should look like! Different voltages are mixed within it on the same rail and also the wires are not strictly separated. Think about your and the safety of others!**
+
 ![Image of the complete controller unit](https://github.com/fbaeuerlein/HydroPynics/blob/master/images/control.jpg)
 
 ### Components
