@@ -1,0 +1,89 @@
+version: "3"
+
+services:
+  reverse-proxy:
+    # The official v2 Traefik docker image
+    image: traefik:v2.2
+    # Enables the web UI and tells Traefik to listen to docker
+    command: --api.insecure=true --providers.docker
+    ports:
+      # The HTTP port
+      - "80:80"
+      # The Web UI (enabled by --api.insecure=true)
+      - "8080:8080"
+    volumes:
+      # So that Traefik can listen to the Docker events
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  mosquitto:
+    container_name: hydropynics_mosquitto
+    # build: ./mosquitto
+    image: eclipse-mosquitto
+    networks:
+      - hydropynics
+    ports:
+      - "1883:1883"
+    volumes:
+      - hydropynics_mosquitto_data:/mosquitto/data 
+      - ./mosquitto:/mosquitto/config
+      - hydropynics_mosquitto_log:/mosquitto/log
+    restart: on-failure
+
+
+  nodered:
+    container_name: hydropynics_nodered
+    command: --settings /data/settings.js
+    build: ./nodered
+    dns: 8.8.8.8  # needed because of DNS errors on npm install in dockerfile
+    networks:
+      - hydropynics
+    ports:
+      - "1880:1880"
+    volumes:
+      - hydropynics_nodered:/data 
+      - ./nodered/settings.js:/data/settings.js
+    restart: on-failure
+
+  influxdb:
+    container_name: hydropynics_influxdb
+    image: influxdb:1.7
+    networks:
+      - hydropynics
+
+    # we just open it internally
+    # ports:
+    #   - "8086:8086"
+
+    volumes:
+      - hydropynics_influxdb:/var/lib/influxdb
+
+    restart: on-failure
+    environment:
+      - INFLUXDB_DB="hydropynic"    # seems not to work with 1.8 ?!
+      - INFLUXDB_READ_USER=reader
+      - INFLUXDB_READ_USER_PASSWORD=weifeu7itho0faed7neiCurieyooTohm
+      - INFLUXDB_WRITE_USER=writer
+      - INFLUXDB_WRITE_USER_PASSWORD=weifeu7itho0faed7neiCurieyooTohm
+  grafana:
+    container_name: hydropynics_grafana
+    image: "grafana/grafana"
+    networks:
+      - hydropynics
+    ports:
+      - "3000:3000"
+    volumes:
+      - hydropynics_grafana:/var/lib/grafana
+    environment:
+      - GF_INSTALL_PLUGINS=grafana-clock-panel,natel-discrete-panel,briangann-gauge-panel,vonage-status-panel,neocat-cal-heatmap-panel
+    restart: on-failure
+
+volumes:
+  hydropynics_nodered:
+  hydropynics_influxdb:
+  hydropynics_grafana:
+  hydropynics_mosquitto_data:
+  hydropynics_mosquitto_config:
+  hydropynics_mosquitto_log:
+
+networks:
+  hydropynics:

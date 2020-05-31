@@ -1,0 +1,104 @@
+[
+    {
+        "id": "830f2434.f15ff",
+        "type": "tab",
+        "label": "Flow 1",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "f0510af5.4532d",
+        "type": "mqtt-broker",
+        "z": "",
+        "name": "hydropynics_mosquitto",
+        "broker": "hydropynics_mosquitto",
+        "port": "1883",
+        "clientid": "",
+        "usetls": false,
+        "compatmode": false,
+        "keepalive": "60",
+        "cleansession": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "closeTopic": "",
+        "closeQos": "0",
+        "closePayload": "",
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": ""
+    },
+    {
+        "id": "40de726f.056b64",
+        "type": "influxdb",
+        "z": "",
+        "hostname": "hydropynics_influxdb",
+        "port": "8086",
+        "protocol": "http",
+        "database": "hydropynic",
+        "name": "",
+        "usetls": false,
+        "tls": ""
+    },
+    {
+        "id": "34f28a89.373756",
+        "type": "influxdb out",
+        "z": "830f2434.f15ff",
+        "influxdb": "40de726f.056b64",
+        "name": "",
+        "measurement": "temperature",
+        "precision": "",
+        "retentionPolicy": "",
+        "x": 610,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "8abdd2ac.cada9",
+        "type": "mqtt in",
+        "z": "830f2434.f15ff",
+        "name": "",
+        "topic": "/test/01",
+        "qos": "2",
+        "datatype": "auto",
+        "broker": "f0510af5.4532d",
+        "x": 140,
+        "y": 140,
+        "wires": [
+            [
+                "cfdb7ebb.de8f5",
+                "d949852d.cb2be"
+            ]
+        ]
+    },
+    {
+        "id": "cfdb7ebb.de8f5",
+        "type": "debug",
+        "z": "830f2434.f15ff",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "x": 320,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "d949852d.cb2be",
+        "type": "json",
+        "z": "830f2434.f15ff",
+        "name": "",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 340,
+        "y": 80,
+        "wires": [
+            [
+                "34f28a89.373756"
+            ]
+        ]
+    }
+]
