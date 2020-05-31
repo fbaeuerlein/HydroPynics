@@ -5,6 +5,9 @@ In 2019 i started to do some experiments with hydroponics. So i decided to do so
 
 To do all the communication with sensors and acquiring the data, i implemented a small python script that is reading gpios and I2C to gather all the data and finally publishes via MQTT. Currently i use Nodred for visualization and remote control.
 
+In addition to that, i wanted to do some monitoring and remote controlling, so i tried to grab my whole docker knowledge to create some small monitoring solution that is also easily deployable into the cloud or some vserver.
+
+
 ## Software
 
 ### Requirements
@@ -18,6 +21,10 @@ TODO
 ### Nodered flows
 
 See the nodered folder for the current flow i'm using.
+
+### Monitoring
+
+See the monitoring subfolder for detailed documentation.
 
 ## Hardware
 
