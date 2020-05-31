@@ -134,4 +134,4 @@ class ADS1115_NTC_ChannelAdapter(Publisher):
         self.channel = channel
 
     def get_value(self):
-        return round(self.ads_ntc.get_channel_temperature(self.channel), 1)
+        return { "value" : round(self.ads_ntc.get_channel_temperature(self.channel), 1) }

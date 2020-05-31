@@ -56,8 +56,8 @@ class Subscriber(NamedBase):
         client.message_callback_add(self.sub_topic, self.on_message)    
 
 class Client(object):
-    def __init__(self):
-        self.client = MQTTClient.Client()
+    def __init__(self, client : MQTTClient.Client):
+        self.client = client
         self.client.on_message = self.on_message
         self.client.on_connect = self.on_connect
         self.client.on_disconnect = self.on_disconnect
