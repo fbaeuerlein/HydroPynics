@@ -57,8 +57,8 @@ See the monitoring subfolder for detailed documentation.
 
 #### Printed parts
 - Raspberry PI DIN rail mount [Thingiverse](https://www.thingiverse.com/thing:2659908)
-- DIN rail mount for the LM2596 (link will follow)
-- DIN rail mount for MW power supply (link will follow)
+- DIN rail mount for the LM2596 [Thingiverse](https://www.thingiverse.com/thing:4415585)
+- DIN rail mount for MW power supply [Thingiverse](https://www.thingiverse.com/thing:4415618)
 
 ### Wiring scheme
 
