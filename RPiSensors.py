@@ -12,7 +12,7 @@ class CPUTemperature(Publisher):
         out, error = process.communicate()
         output = out.decode('utf-8')
         temperature = float(output[output.index('=') + 1:output.rindex("'")])
-        return { "temperature" : temperature }
+        return { "value" : temperature }
 
 class GPIO(Publisher, Subscriber):
     '''
@@ -30,9 +30,9 @@ class GPIO(Publisher, Subscriber):
     def get_value(self):
         result = bool(RPi.GPIO.input(self.pin))
         if self.inverted:
-            return not result
+            return { "value" : not result }
         else:
-            return result
+            return { "value" : result }
 
     def set_value(self, value):
         if self.inverted:

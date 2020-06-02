@@ -9,4 +9,4 @@ class DHT11(Publisher):
 
     def get_value(self):
         humidity, temperature = Adafruit_DHT.read_retry(Adafruit_DHT.DHT11, self.gpio)
-        return { "humidity" : humidity, "temperature" : temperature }
+        return { "humidity" : { "value" : humidity }, "temperature" : { "value" : temperature } }
