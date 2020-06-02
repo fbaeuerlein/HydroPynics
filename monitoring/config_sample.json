@@ -1,0 +1,42 @@
+{
+    "influx": {
+        "container": {
+            "name": "hydropynics_influx"
+        },
+        "writer": {
+            "username": "writer",
+            "password": "password"
+        },
+        "reader": {
+            "username": "reader",
+            "password": "password"
+        },
+        "database": {
+            "name": "hydropynic"
+        }
+    },
+    "mosquitto": {
+        "users": [
+            {
+                "username": "hydro01",
+                "password": "password"
+            },
+            {
+                "username": "hydro02",
+                "password": "password"
+            }
+        ]
+    },
+    "nodered": {
+        "user": {
+            "username": "admin",
+            "password": "password"
+        }
+    },
+    "grafana": {
+        "user": {
+            "username": "admin",
+            "password": "password"
+        }
+    }
+}

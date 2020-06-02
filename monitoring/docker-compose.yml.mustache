@@ -45,7 +45,7 @@ services:
     restart: on-failure
 
   influxdb:
-    container_name: hydropynics_influxdb
+    container_name: {{influx.container.name}}
     image: influxdb:1.7
     networks:
       - hydropynics
@@ -59,11 +59,11 @@ services:
 
     restart: on-failure
     environment:
-      - INFLUXDB_DB="hydropynic"    # seems not to work with 1.8 ?!
-      - INFLUXDB_READ_USER=reader
-      - INFLUXDB_READ_USER_PASSWORD=weifeu7itho0faed7neiCurieyooTohm
-      - INFLUXDB_WRITE_USER=writer
-      - INFLUXDB_WRITE_USER_PASSWORD=weifeu7itho0faed7neiCurieyooTohm
+      - INFLUXDB_DB={{influx.database.name}}    # seems not to work with 1.8 ?!
+      - INFLUXDB_READ_USER={{influx.reader.username}}
+      - INFLUXDB_READ_USER_PASSWORD={{influx.reader.password}}
+      - INFLUXDB_WRITE_USER={{influx.writer.username}}
+      - INFLUXDB_WRITE_USER_PASSWORD={{influx.writer.password}}
   grafana:
     container_name: hydropynics_grafana
     image: "grafana/grafana"
@@ -73,8 +73,11 @@ services:
       - "3000:3000"
     volumes:
       - hydropynics_grafana:/var/lib/grafana
+      - ./grafana/:/etc/grafana/provisioning/datasources
     environment:
       - GF_INSTALL_PLUGINS=grafana-clock-panel,natel-discrete-panel,briangann-gauge-panel,vonage-status-panel,neocat-cal-heatmap-panel
+      - GF_SECURITY_ADMIN_USER={{grafana.user.username}}
+      - GF_SECURITY_ADMIN_PASSWORD={{grafana.user.password}}
     restart: on-failure
 
 volumes:

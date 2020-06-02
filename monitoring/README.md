@@ -9,64 +9,32 @@ Following components are used:
 - Grafana for visualization of time series data
 - InfluxDB for easy storage of time series data 
 
-## Configure settings
+## Requirements
 
-## Run docker
+- mustache
+- docker
 
-`docker-compose up`
+## Create deployment settings automatically
 
+### Configuration file for deployment
 
-### Configure mosquitto
+Modify the config_sample.json for password and user settings for the services.
+Grafana is configured to automatically use the Influx service as a data source.
+The sample config should be self explaining. 
 
-I'm using a pretty easy configuration for mosquitto. Currently only user/password authentication is
-used. So you have to provide the right passwd file for mosquitto that contain the users with the corresponding password hashes.
+The container name on influx determines the network-name of the service. This is needed for the grafana configuration.
 
-#### Generate password 
+Currently, for nodered, the credentials have to be entered manually if you want to push data to the Influx database.
 
-Install mosquitto locally:
+### Run `deploy.sh` and deploy the services
 
-`apt-get install mosquitto`
+Run `deploy.sh` within this folder with the modified configuration JSON file. A subfolder 'deployment' will be created, that contains the resulting docker-compose.yml and the required resources for docker-compose. So go folder deployment and run `docker-compse up (--build)` to start the services.
 
-Write specified user and password to password file:
+### Details of `deploy.sh`
 
-`mosquitto_passwd -c <password file> <username>`
+See deploy.sh with comments
 
-Example:
-
-`mosquitto_passwd -c mosquitto/mosquitto.passwd client01`
-
-
-### Configure Influx
-
-#### Authentication
-
-Set reading and writing user credentials within the docker-compose.yml.
-For a general reading access the INFLUXDB_READ_USER settings have to be adapted.
-The same has to be done for a writing user with INFLUXDB_WRITE_USER.
-
-#### Database creation
-
-The database is currently created with the env parameter INFLUXDB_DB. 
-This just seems to work with 1.7 currently. I tried with 1.8 but that wasn't successful so far (also the init scripts didn't work).
-
-
-### Configure Grafana
-
-#### Authentication
-
-On first login, the default credentials are admin/admin. So just log in and you will be requested to change the password.
-
-#### Database connection
-
-Add a new influxdb datasource. Set the hostname to the container name and the according path. 
-Example: http://hydropynics_influxdb:8086
-
-Set basic auth to active and use the credentials for the reading user previously set for the influx container within the docker.compose.yml.
-
-
-### Configure nodered
-
-#### Authentication
+#### Nodered Authentication
 
 Tutorial from https://nodered.org/docs/user-guide/runtime/securing-node-red#http-node-security
 
@@ -80,6 +48,10 @@ and execute
 
 `node -e "console.log(require('bcryptjs').hashSync(process.argv[1], 8));" your-password-here`. 
 
-#### MQTT to Influx flow
+### MQTT to Influx flow
 
 See nodered folder in / and the sample_influx.json
+
+### Enable docker-compose as system service
+
+See https://gist.github.com/mosquito/b23e1c1e5723a7fd9e6568e5cf91180f

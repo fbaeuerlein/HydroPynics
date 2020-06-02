@@ -1,0 +1,13 @@
+module.exports = {
+    adminAuth: {
+        type: "credentials",
+        users: [
+            {
+                username: "{{username}}",
+                password: "{{password}}",
+                permissions: "*"
+            }
+        ]
+    },
+    httpNodeAuth: { user: "{{username}}", pass: "{{password}}" }
+}

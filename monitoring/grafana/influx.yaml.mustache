@@ -1,0 +1,13 @@
+apiVersion: 1
+
+datasources:
+  - name: {{influx.container.name}}
+    basicAuth: true
+    type: influxdb
+    access: proxy
+    database: {{influx.database.name}}
+    user: {{influx.reader.username}}
+    password: {{influx.reader.password}}
+    url: http://{{influx.container.name}}:8086
+    jsonData:
+      httpMode: GET
