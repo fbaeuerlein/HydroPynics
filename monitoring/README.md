@@ -5,7 +5,8 @@ This is the description to run a control and monitoring stack with docker. Inspi
 Following components are used:
 
 - Mosquitto MQTT broker for sending/receiving messages
-- Nodered for easy generation of data flows between the components
+- Telegraf for receiving the MQTT messages and forwading them to influx
+- Nodered for easy generation of data flows and control
 - Grafana for visualization of time series data
 - InfluxDB for easy storage of time series data 
 
@@ -50,7 +51,8 @@ and execute
 
 ### MQTT to Influx flow
 
-See nodered folder in / and the sample_influx.json
+The mapping of topics and messages to database entries is done with telegraf. 
+See telegraf.conf.mustache `[[inputs.mqtt_consumer]]` section for details.
 
 ### Enable docker-compose as system service
 
