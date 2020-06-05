@@ -1,23 +1,9 @@
 version: "3"
 
 services:
-  reverse-proxy:
-    # The official v2 Traefik docker image
-    image: traefik:v2.2
-    # Enables the web UI and tells Traefik to listen to docker
-    command: --api.insecure=true --providers.docker
-    ports:
-      # The HTTP port
-      - "80:80"
-      # The Web UI (enabled by --api.insecure=true)
-      - "8080:8080"
-    volumes:
-      # So that Traefik can listen to the Docker events
-      - /var/run/docker.sock:/var/run/docker.sock
 
   mosquitto:
-    container_name: hydropynics_mosquitto
-    # build: ./mosquitto
+    container_name: {{mosquitto.container.name}}
     image: eclipse-mosquitto
     networks:
       - hydropynics
@@ -50,10 +36,6 @@ services:
     networks:
       - hydropynics
 
-    # we just open it internally
-    # ports:
-    #   - "8086:8086"
-
     volumes:
       - hydropynics_influxdb:/var/lib/influxdb
 
@@ -64,6 +46,18 @@ services:
       - INFLUXDB_READ_USER_PASSWORD={{influx.reader.password}}
       - INFLUXDB_WRITE_USER={{influx.writer.username}}
       - INFLUXDB_WRITE_USER_PASSWORD={{influx.writer.password}}
+
+  telegraf:
+    container_name: hydropynics_telegraf
+    image: "telegraf"
+    depends_on:
+      - influxdb
+    networks:
+      - hydropynics
+    volumes:
+      - ./telegraf/telegraf.conf:/etc/telegraf/telegraf.conf
+    restart: on-failure
+
   grafana:
     container_name: hydropynics_grafana
     image: "grafana/grafana"

@@ -16,6 +16,14 @@
         }
     },
     "mosquitto": {
+        "container": {
+            "name": "hydropynics_mosquitto"
+        },
+        "localuser" :
+        {
+            "username" : "telegraf",
+            "password" : "password"
+        },               
         "users": [
             {
                 "username": "hydro01",

@@ -7,7 +7,8 @@ TARGET="./deployment"
 TARGET_MOSQUITTO=$TARGET/mosquitto
 TARGET_NODERED=$TARGET/nodered
 TARGET_GRAFANA=$TARGET/grafana
-mkdir -p $TARGET $TARGET_NODERED $TARGET_MOSQUITTO $TARGET_GRAFANA
+TARGET_TELEGRAF=$TARGET/telegraf
+mkdir -p $TARGET $TARGET_NODERED $TARGET_MOSQUITTO $TARGET_GRAFANA $TARGET_TELEGRAF
 
 cp mosquitto/mosquitto.conf $TARGET_MOSQUITTO
 cp nodered/Dockerfile $TARGET_NODERED
@@ -41,6 +42,9 @@ mustache nodered.config.json ./nodered/settings.js.mustache > $TARGET_NODERED/se
 # generate grafana settings
 echo "Generating grafana config"
 mustache $1 grafana/influx.yaml.mustache > $TARGET_GRAFANA/influx.yaml
+
+echo "Generating telegraf config"
+mustache $1 telegraf/telegraf.conf.mustache > $TARGET_TELEGRAF/telegraf.conf
 
 echo "Cleaning up ..."
 rm nodered_passwd.sh
