@@ -23,7 +23,7 @@ password = "{{influx.writer.password}}"
 
 [[inputs.mqtt_consumer]]
 servers = ["tcp://{{mosquitto.container.name}}:1883"]
-topics = ["test"]
+topics = ["/sensors/#", "/devices/#"]
 username = "{{mosquitto.localuser.username}}"
 password = "{{mosquitto.localuser.password}}"
 
