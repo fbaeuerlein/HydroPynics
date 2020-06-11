@@ -1,0 +1,53 @@
+# grafana container settings
+grafana:
+  # settings for serving grafana (e.g. run on server on the net)
+  server_settings:
+    domain: localhost                                     # domain
+    root_url: '%(protocol)s://%(domain)s:%(http_port)s/'  # full url (don't forget to add sub path if you use one)
+    serve_from_sub_path: 'true'                           # true if subpath is used
+  user:
+    password: password  # password of admin
+    username: admin     # admin username
+
+# influx settings    
+influx:
+  container:
+    name: hydropynics_influx  # container name (used as server name internally)
+  database:
+    name: hydropynic          # database name for storage
+  reader:
+    password: password        # reading user password
+    username: reader          # reading user username
+  writer:
+    password: password        # writing user password
+    username: writer          # writing user username
+
+# mosquitto settings
+mosquitto:
+  container:
+    name: hydropynics_mosquitto # container name (also used internally as server name)
+
+  # user settings for service users (currently nodered and telegraf)
+  localusers:
+    nodered:
+      password: password
+      username: nodered
+    telegraf:
+      password: password
+      username: telegraf
+
+  # other users (i.e. devices sending data to us)
+  users:
+  - password: password
+    username: hydro01
+  - password: password
+    username: hydro02
+
+# nodered settings
+nodered:
+  http_root: /  # http root, add subfolder if it's served with e.g. nginx as subservice
+
+  # user settings for admin
+  user:
+    password: password
+    username: admin
