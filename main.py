@@ -7,6 +7,12 @@ import argparse
 import log
 import MQTT
 import DeviceManager
+import I2CDevices
+import RPiSensors
+import DHTSensors
+import RPi.GPIO
+
+RPi.GPIO.setmode(RPi.GPIO.BCM)
 
 logger = log.get_logger("main")
 
@@ -37,14 +43,14 @@ logger.info("  MQTT user: {}".format(mqtt_user))
 ads_ntc = I2CDevices.ADS1115_NTC()
 ads_ntc.run()
 
-dht11 = DHT11(17) # dht11 on gpio 17
+dht11 = DHTSensors.DHT11(17) # dht11 on gpio 17
 dht11.run()
 
-dht11_temperature = PublisherAdapter("/sensors/dht11/01/temperature", dht11.get_temperature)
-dht11_humidity = PublisherAdapter("/sensors/dht11/01/humidity", dht11.get_humidity)
+dht11_temperature = MQTT.PublisherAdapter("/sensors/dht11/01/temperature", dht11.get_temperature)
+dht11_humidity = MQTT.PublisherAdapter("/sensors/dht11/01/humidity", dht11.get_humidity)
 rpi_cpu_temp = RPiSensors.CPUTemperature("/sensors/temperature/cpu")
-rpi_gpio_pump1 = RPiSensors.GPIO("/devices/pump/air", 27, True, GPIO.OUT, False)
-rpi_gpio_pump2 = RPiSensors.GPIO("/devices/pump/circulation", 22, False, GPIO.OUT, True)
+rpi_gpio_pump1 = RPiSensors.GPIO("/devices/pump/air", 27, True, RPi.GPIO.OUT, False)
+rpi_gpio_pump2 = RPiSensors.GPIO("/devices/pump/circulation", 22, False, RPi.GPIO.OUT, True)
 temp_tank = I2CDevices.ADS1115_NTC_ChannelAdapter("/sensors/temperature/tank", ads_ntc, 1)
 temp_ext = I2CDevices.ADS1115_NTC_ChannelAdapter("/sensors/temperature/ext", ads_ntc, 2)
 
@@ -65,7 +71,7 @@ device_manager.add(temp_ext, 60)
 connected = False
 while not connected:
     try:
-        mqtt_client.connect("localhost")
+        mqtt_client.connect(mqtt_host, mqtt_port)
     except: 
         logger.warn("Failed to connect. Retrying in 10 seconds.")
         time.sleep(10)

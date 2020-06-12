@@ -100,8 +100,8 @@ class Client(object):
     def mqtt_client(self):
         return self.client
 
-    def connect(self, mqtt_host):
-        self.client.connect(mqtt_host)
+    def connect(self, mqtt_host, mqtt_port : int = 1883):
+        self.client.connect(mqtt_host, port=mqtt_port)
         self.client.loop_start()
         logger.info("Connected '{}' to '{}'".format(self.device_id_, mqtt_host))
 

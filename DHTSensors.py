@@ -2,6 +2,7 @@ from MQTT import Publisher, Subscriber, Client
 import Adafruit_DHT
 import threading
 import time
+import log
 
 class DHT11(object):
     def __init__(self, gpio : int):
@@ -10,6 +11,7 @@ class DHT11(object):
         self.humidity = None
         self.temperature = None
         self.lock = threading.Lock()
+        self.logger = log.get_logger("DHT11")
         pass
 
     def __acquire_data__(self):
@@ -31,7 +33,7 @@ class DHT11(object):
             return self.humidity
 
     def run(self):
-        print("Starting thread for DHT11")
+        self.logger.info("Starting thread for DHT11")
         threading.Thread(target=self.__thread_loop__).start()
 
 
