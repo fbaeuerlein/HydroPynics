@@ -9,10 +9,13 @@ class DHT11(object):
         self.gpio = gpio
         self.humidity = None
         self.temperature = None
+        self.lock = threading.Lock()
         pass
 
     def __acquire_data__(self):
-        self.humidity, self.temperature = Adafruit_DHT.read_retry(Adafruit_DHT.DHT11, self.gpio)
+        with self.lock:
+            self.humidity, self.temperature = Adafruit_DHT.read_retry(Adafruit_DHT.DHT11, self.gpio)
+        
 
     def __thread_loop__(self):
         while True:
@@ -20,10 +23,12 @@ class DHT11(object):
             time.sleep(self.delay)
 
     def get_temperature(self):
-        return self.temperature
+        with self.lock:
+            return self.temperature
 
     def get_humidity(self):
-        return self.humidity
+        with self.lock:
+            return self.humidity
 
     def run(self):
         print("Starting thread for DHT11")

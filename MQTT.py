@@ -1,14 +1,10 @@
 
 import paho.mqtt.client as MQTTClient
 import json
-import logging
+import log
 import sys
 
-logger = logging.getLogger("MQTT")
-logger.setLevel(logging.INFO)
-logger_handler = logging.StreamHandler(stream=sys.stdout)
-logger_handler.setFormatter(logging.Formatter('%(asctime)s %(levelname)-8s %(name)-12s %(message)s '))
-logger.addHandler(logger_handler)     
+logger = log.get_logger("MQTT")     
 
 class NamedBase(object):
     def __init__(self, name):
@@ -29,6 +25,7 @@ class Publisher(NamedBase):
 
         # if client is not already set, do nothing
         if self.client is None:
+            logger.warn("No client set. Failed to publish!")
             pass
 
         try:
@@ -81,12 +78,16 @@ class Subscriber(NamedBase):
 
     def subscribe(self, client : MQTTClient.Client):
         logger.info("Subscribing for topic '{}'".format(self.sub_topic))
-        client.mqtt_client().subscribe(self.sub_topic)
-        client.mqtt_client().message_callback_add(self.sub_topic, self.on_message)    
+        client.subscribe(self.sub_topic)
+        client.message_callback_add(self.sub_topic, self.on_message)    
+
+    def unsubscribe(self, client : MQTTClient.Client):
+        client.mqtt_client().unsubscribe(self.sub_topic)
 
 class Client(object):
-    def __init__(self, client : MQTTClient.Client, device_id : str):
-        self.client = client
+    def __init__(self, device_id : str, debug : bool = True):
+        self.client = MQTTClient.Client()
+        self.client.enable_logger(log.get_logger("PAHO"))
         self.client.on_message = self.on_message
         self.client.on_connect = self.on_connect
         self.client.on_disconnect = self.on_disconnect
@@ -104,12 +105,16 @@ class Client(object):
         self.client.loop_start()
         logger.info("Connected '{}' to '{}'".format(self.device_id_, mqtt_host))
 
+    def username_pw_set(self, username : str, password : str):
+        self.client.username_pw_set(username, password)
+
     def add(self, item):
         # set client to publisher/subscriber
         item.client = self
         self.items.append(item)
 
     def on_connect(self, client, userdata, flags, rc):
+        logger.info("Connected!")
         for i in self.items:
             # just Subscribers can subscribe for changes
             if isinstance(i, Subscriber):
@@ -117,6 +122,9 @@ class Client(object):
 
     def on_disconnect(self, client, userdata, rc):
         logger.info("Disconnected!")
+        for i in self.items:
+            if isinstance(i, Subscriber):
+                i.unsubscribe(self)
 
     def on_message(self, client, userdata, message):
         logger.info("Unhandled message received: {}".format(message.payload))

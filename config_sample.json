@@ -1,0 +1,13 @@
+{
+    "general" :
+    {
+        "device_id" : "hydro01"
+    },
+    "mqtt" : 
+    {
+        "host" : "localhost", 
+        "port" : 1883, 
+        "user" : "hydro01", 
+        "password" : "password"
+    }
+}
