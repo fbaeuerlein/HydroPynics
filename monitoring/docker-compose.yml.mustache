@@ -30,6 +30,7 @@ services:
       - ./nodered/settings.js:/data/settings.js
     restart: on-failure
 
+
   influxdb:
     container_name: {{influx.container.name}}
     image: influxdb:1.7
@@ -72,6 +73,9 @@ services:
       - GF_INSTALL_PLUGINS=grafana-clock-panel,natel-discrete-panel,briangann-gauge-panel,vonage-status-panel,neocat-cal-heatmap-panel
       - GF_SECURITY_ADMIN_USER={{grafana.user.username}}
       - GF_SECURITY_ADMIN_PASSWORD={{grafana.user.password}}
+      - GF_SERVER_SERVE_FROM_SUB_PATH={{grafana.server_settings.serve_from_sub_path}}
+      - GF_SERVER_DOMAIN={{grafana.server_settings.domain}}
+      - GF_SERVER_ROOT_URL={{grafana.server_settings.root_url}}    
     restart: on-failure
 
 volumes:

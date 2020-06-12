@@ -40,7 +40,7 @@ mustache nodered.config.json ./nodered/settings.js.mustache > $TARGET_NODERED/se
 
 
 # generate grafana settings
-echo "Generating grafana config"
+echo "Generating grafana datasource configuration"
 mustache $1 grafana/influx.yaml.mustache > $TARGET_GRAFANA/influx.yaml
 
 echo "Generating telegraf config"

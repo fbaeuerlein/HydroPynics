@@ -19,13 +19,13 @@ Following components are used:
 
 ### Configuration file for deployment
 
-Modify the config_sample.json for password and user settings for the services.
+Modify the config_sample.yaml for password and user settings for the services.
 Grafana is configured to automatically use the Influx service as a data source.
 The sample config should be self explaining. 
 
 The container name on influx determines the network-name of the service. This is needed for the grafana configuration.
 
-Currently, for nodered, the credentials have to be entered manually if you want to push data to the Influx database.
+Currently, for nodered, the credentials have to be entered manually if you want to connect to the MQTT broker.
 
 ### Run `deploy.sh` and deploy the services
 

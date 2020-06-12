@@ -1,4 +1,4 @@
 #!/bin/sh
 # create a json file that contains the generated password
 PASSWORD=$(node -e "console.log(require('bcryptjs').hashSync(process.argv[1], 8));" {{nodered.user.password}})
-echo "{ \"username\" : \"{{nodered.user.username}}\", \"password\" : \"$PASSWORD\" }" > /config/nodered.config.json
+echo "{ \"http_root\" : \"{{nodered.http_root}}\", \"username\" : \"{{nodered.user.username}}\", \"password\" : \"$PASSWORD\" }" > /config/nodered.config.json

@@ -1,4 +1,5 @@
 {{#mosquitto.users}}
-    {{username}}:{{password}}
+{{username}}:{{password}}
 {{/mosquitto.users}}
-{{mosquitto.localuser.username}}::{{mosquitto.localuser.password}}
+{{mosquitto.localusers.telegraf.username}}:{{mosquitto.localusers.telegraf.password}}
+{{mosquitto.localusers.nodered.username}}:{{mosquitto.localusers.nodered.password}}
