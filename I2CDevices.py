@@ -5,57 +5,6 @@ import smbus
 import threading
 import time
 
-'''
-    direction: True = output, False = input
-'''
-class PCF8574T(Publisher, Subscriber):
-    def __init__(self, topic_base : str, address :int, channel : int, inverted : bool, direction : bool):
-        super(PCF8574T, self).__init__(topic_base)
-        self.address = address
-        self.channel = channel
-        self.bus = smbus.SMBus(bus=1)
-        self.inverted = inverted
-        self.direction = direction
-        self.value = int(0)
-
-    def value_for_channel(self, data):
-        result =  data & ( 0x01 << self.channel ) != 0
-        if self.inverted: 
-            return not result
-        else:
-            return result
-
-    def get_value(self):
-        if self. direction: 
-            data = self.value
-        else:
-            data = self.bus.read_byte(self.address)
-        return self.value_for_channel(data)
-
-    def set_value(self, value):
-
-        if self.inverted:
-            requested_value = not value
-        else:
-            requested_value = value
-        mask = 0x01 << self.channel
-
-        current = self.bus.read_byte(self.address)
-        state = current & mask != 0
-
-        new_value = current
-
-        if state :
-            if not requested_value: 
-                new_value = ~mask & current
-                self.bus.write_byte_data(self.address, 0x00, new_value)
-
-        else:
-            if requested_value: 
-                new_value = mask | current
-                self.bus.write_byte_data(self.address, 0x00, new_value)
-
-
 class ADS1115_NTC(object):
     def __init__(self):
         self.r_serial = 22e3    # 22kOhm
@@ -66,6 +15,8 @@ class ADS1115_NTC(object):
         self.ref_channel = 3    # channel that measures the ref voltage
         self.temperatures_per_channel = []
         self.adc =Adafruit_ADS1x15.ADS1115(address=self.address, )
+        self.measurements = 5 # number of measurements to do
+        self.measurement_delay = 5000 # delay between measurements in ms
 
 
     def to_volt(self, value : int):
@@ -104,9 +55,11 @@ class ADS1115_NTC(object):
         temperatures = []
         for channel in range(0, 3):
             t = 0
-            for _ in range(0, 5):
+            for _ in range(0, self.measurements):
                 t += self.get_temperature(channel)
-            t /= 5.
+                time.sleep(self.measurement_delay / 1000.)
+                
+            t /= float(self.measurements)
             temperatures.append(t)
         
         self.temperatures_per_channel = temperatures

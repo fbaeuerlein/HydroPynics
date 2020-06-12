@@ -25,16 +25,22 @@ class GPIO(Publisher, Subscriber):
         self.pin = pin
         self.inverted = inverted
         RPi.GPIO.setup(pin, mode)
-        self.set_value(initial_value)   
+        self.__set_value(initial_value)   
 
     def get_value(self):
         result = bool(RPi.GPIO.input(self.pin))
+
+        # convert to int (if using bool, telegraf will not convert it currently)
         if self.inverted:
-            return { "value" : not result }
+            return { "value" : int(not result) }
         else:
-            return { "value" : result }
+            return { "value" : int(result) }
 
     def set_value(self, value):
+        self.__set_value(value)
+        super(GPIO, self).publish() # publish immediately after set
+
+    def __set_value(self, value):
         if self.inverted:
             RPi.GPIO.output(self.pin, not value)
         else:
