@@ -78,8 +78,8 @@ device_manager.add(dht11_humidity, 60)
 device_manager.add(rpi_cpu_temp, 60)
 device_manager.add(rpi_gpio_pump1, 60)
 device_manager.add(rpi_gpio_pump2, 60)
-device_manager.add(temp_tank, 5)
-device_manager.add(temp_ext, 5)
+device_manager.add(temp_tank, 60)
+device_manager.add(temp_ext, 60)
 
 # finally connect
 connected = False
@@ -97,3 +97,4 @@ try:
     device_manager.run()
 except KeyboardInterrupt as e:
     ads_ntc_reader.stop()
+    dht11.stop()

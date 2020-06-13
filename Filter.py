@@ -12,11 +12,12 @@ class Filter(object):
 
 
 class MovingAverage(Filter):
-    def __init__(self, samples: int = 5, detect_outliers: bool = True, outlier_factor=10.):
+    def __init__(self, samples: int = 5, detect_outliers: bool = True, outlier_factor=10., no_sd_max_deviation = 0.):
         self.samples = samples
         self.values = collections.deque()
         self.detect_outliers = detect_outliers
         self.outlier_factor = outlier_factor
+        self.no_sd_max_deviation = no_sd_max_deviation
         self.logger = log.get_logger("Filter_MVA")
 
     def mean(self):
@@ -41,8 +42,12 @@ class MovingAverage(Filter):
 
         if self.detect_outliers and self.samples == len(self.values) and self.detect_outlier(value):
             mean, sd = self.mean_and_sd()
-            self.logger.info("Outlier detected: {} - Mean: {} SD: {}".format(value, mean, sd))
-            return mean
+            if sd == 0: #  ( sd = 0 can happen on DHT11)
+                if abs(mean - value) > self.no_sd_max_deviation:
+                    self.logger.info("Outlier detected: {} - Mean: {} SD: {}".format(value, mean, sd))
+            else:
+                self.logger.info("Outlier detected: {} - Mean: {} SD: {}".format(value, mean, sd))
+                return mean
 
         if len(self.values) == self.samples:
             self.values.popleft()
