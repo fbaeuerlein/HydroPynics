@@ -1,6 +1,6 @@
 paho-mqtt
 schedule
 Adafruit-DHT
-Adafruit-ADS1x15
+adafruit-circuitpython-ads1x15
 RPi.GPIO
 smbus
