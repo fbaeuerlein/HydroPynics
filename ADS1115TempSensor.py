@@ -12,29 +12,47 @@ from adafruit_ads1x15.analog_in import AnalogIn
 import Threaded
 
 # Create the I2C bus
-i2c = busio.I2C(board.SCL, board.SDA)
+def get_i2c():
+    return busio.I2C(board.SCL, board.SDA)
 
 class ADS1115(object):
     def __init__(self, gain : int = 1, ref_channel : int = None):
-        self.ads = ADS.ADS1115(i2c)
-        self.ads.gain = gain # see datasheet for gain levels (defines voltage range)
-        chans = [ADS.P0, ADS.P1, ADS.P2, ADS.P3 ] # available channels
+        self.ads = None
+        self.chans = [ADS.P0, ADS.P1, ADS.P2, ADS.P3 ] # available channels
         self.channels = []
         self.ref_channel = ref_channel
+        self.lock = threading.Lock() # lock for reset
+        self.logger = log.get_logger("ADS1115")
+        self.gain = gain
 
-        # if no ref channel selected, just use the channels as they are
-        if ref_channel is None: 
-            for chan in chans:
-                self.channels.append(AnalogIn(self.ads, chan))
-        else:
-            if ref_channel < 0 or ref_channel > 3:
-                raise ValueError("invalid reference channel")
-            
-            for chan in chans:
-                if chan == chans[ref_channel]: continue # omit ref channel
-                # might throw if wrong combination is selected
-                self.channels.append(AnalogIn(self.ads, chan, chans[ref_channel]))
-            
+        self.reset()
+               
+
+
+    # currently the sensor hangs from time to time (i.e. no value change anymore)
+    def reset(self):
+        self.logger.info("Resetting.")
+        with self.lock:
+
+            self.ads = None
+            self.channels = []
+
+            self.ads = ADS.ADS1115(get_i2c())
+            self.ads.gain = self.gain # see datasheet for gain levels (defines voltage range)
+
+            # if no ref channel selected, just use the channels as they are
+            if self.ref_channel is None: 
+                for chan in self.chans:
+                    self.channels.append(AnalogIn(self.ads, chan))
+            else:
+                if self.ref_channel < 0 or self.ref_channel > 3:
+                    raise ValueError("invalid reference channel")
+                
+                for chan in self.chans:
+                    if chan == self.chans[self.ref_channel]: continue # omit ref channel
+                    # might throw if wrong combination is selected
+                    self.channels.append(AnalogIn(self.ads, chan, self.chans[self.ref_channel]))            
+
     def ref(self): 
         return self.ref_channel
 
@@ -46,12 +64,14 @@ class ADS1115(object):
                 raise ValueError("can't select ref channel")
 
     def get_value(self, channel : int):
-        self.__check_channel_index__(channel)
-        return self.channels[channel].value
+        with self.lock:
+            self.__check_channel_index__(channel)
+            return self.channels[channel].value
 
     def get_voltage(self, channel : int):
-        self.__check_channel_index__(channel)
-        return self.channels[channel].voltage
+        with self.lock:
+            self.__check_channel_index__(channel)
+            return self.channels[channel].voltage
 
 '''
     Vcc -----------+----------------------------+

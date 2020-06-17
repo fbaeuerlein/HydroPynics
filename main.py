@@ -81,6 +81,8 @@ device_manager.add(rpi_gpio_pump2, 60)
 device_manager.add(temp_tank, 60)
 device_manager.add(temp_ext, 60)
 
+schedule.every(900).seconds.do(ads.reset) # reset ads every 15 minutes
+
 # finally connect
 connected = False
 while not connected:
