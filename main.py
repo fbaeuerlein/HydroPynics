@@ -100,3 +100,5 @@ try:
 except KeyboardInterrupt as e:
     ads_ntc_reader.stop()
     dht11.stop()
+    GPIO.cleanup()
+

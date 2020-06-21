@@ -10,6 +10,9 @@ class Filter(object):
     def clear(self):
         pass
 
+class Identity(Filter):
+    def feed(self, value : float):
+        return value
 
 class MovingAverage(Filter):
     def __init__(self, samples: int = 5, detect_outliers: bool = True, outlier_factor=10., no_sd_max_deviation = 0.):
