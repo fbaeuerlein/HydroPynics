@@ -33,6 +33,8 @@ class ADS1115(object):
     def reset(self):
         self.logger.info("Resetting.")
         with self.lock:
+            if not self.ads is None:
+                self.ads.i2c_device.i2c.deinit()
 
             self.ads = None
             self.channels = []
