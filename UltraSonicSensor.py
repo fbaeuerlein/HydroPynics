@@ -25,7 +25,7 @@ class HCSR04(Threaded.Threaded):
 		GPIO.setup(self.gpio_trigger, GPIO.OUT)
 		GPIO.setup(self.gpio_echo, GPIO.IN)
 		GPIO.output(self.gpio_trigger, False)
-		self.filter = Filter.MovingAverage(10, True, 20.)
+		self.filter = Filter.MovingAverage(25, True, 20.)
 		self.travel_time = None
 		self.lock = threading.Lock()
 		  

@@ -10,6 +10,7 @@ import DeviceManager
 import ADS1115TempSensor
 import RPiSensors
 import DHTSensors
+import UltraSonicSensor
 import RPi.GPIO
 from functools import partial
 
@@ -53,7 +54,17 @@ NTCAdapters = [
 ads_ntc_reader = ADS1115TempSensor.ADSTemperatureThreadedReader(NTCAdapters)
 ads_ntc_reader.run()
 
+tank_level_sensor = UltraSonicSensor.HCSR04(13, 19)
+tank_level_sensor.run()
+
+def tank_level_func():
+    # return in cm with temperature compensation
+    return 100. * tank_level_sensor.get_distance(ads_ntc_reader.get_channel_temperature(1))
+
+ads.reset()
+
 # create publisher adapters for publishing
+tank_level = MQTT.PublisherAdapter("/sensors/tank_level", tank_level_func)
 temp_tank = MQTT.PublisherAdapter("/sensors/temperature/tank", partial(ads_ntc_reader.get_channel_temperature, 0))
 temp_ext = MQTT.PublisherAdapter("/sensors/temperature/ext", partial(ads_ntc_reader.get_channel_temperature, 1))
 
@@ -80,6 +91,7 @@ device_manager.add(rpi_gpio_pump1, 60)
 device_manager.add(rpi_gpio_pump2, 60)
 device_manager.add(temp_tank, 60)
 device_manager.add(temp_ext, 60)
+device_manager.add(tank_level, 60)
 
 schedule.every(900).seconds.do(ads.reset) # reset ads every 15 minutes
 
@@ -100,5 +112,6 @@ try:
 except KeyboardInterrupt as e:
     ads_ntc_reader.stop()
     dht11.stop()
-    GPIO.cleanup()
+    tank_level_sensor.stop()
+    RPi.GPIO.cleanup()
 
