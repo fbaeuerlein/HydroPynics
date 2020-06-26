@@ -12,15 +12,12 @@ In addition to that, i wanted to do some monitoring and remote controlling, so i
 
 ### Requirements
 
-TODO
+The client software runs with python3. 
+For the monitoring setup you need docker.
 
 ### Installation
 
 TODO
-
-### Nodered flows
-
-See the nodered folder for the current flow i'm using.
 
 ### Monitoring
 
@@ -50,10 +47,12 @@ See the monitoring subfolder for detailed documentation.
 - Relays for switching pumps: IDEC 2-channel (important to switch both wires of the 230V!)
 - Relays to switch 24V control voltage: 8-Channel relay card (the default one you find everywhere in the internet)
 - ADS1115 for reading the NTCs
+- HC SR04 Ultrasonic sensor for tank level measuring
 - NTCs: Some old ones from central heatings
 - Raspberry Pi 3B
 - Mounting: DIN Rail
 - Other parts: wires, LEDs, screws, glue, pcbs, etc.
+- Parts that are controlled: fish tank air pump, fish tank pump for circulation
 
 #### Printed parts
 - Raspberry PI DIN rail mount [Thingiverse](https://www.thingiverse.com/thing:2659908)
