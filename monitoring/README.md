@@ -2,6 +2,8 @@
 
 This is the description to run a control and monitoring stack with docker. Inspired by https://github.com/ttncat/ttncat-docker-compose.
 
+![Some grafana dashboard](https://github.com/fbaeuerlein/HydroPynics/blob/master/images/dashboard.png)
+
 Following components are used:
 
 - Mosquitto MQTT broker for sending/receiving messages
