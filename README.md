@@ -23,10 +23,11 @@ cd HydroPynics
 pip3 install -r requirements.txt
 ```
 
-#### Add user to gpio and i2c group
+#### To run as a certain user, add him to following groups
 ```
 usermod -aG gpio <USER>
 usermod -aG i2c <USER>
+usermod -aG video <USER>   # for calling vcgencmd internally
 ```
 
 #### Configuration
