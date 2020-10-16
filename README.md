@@ -3,21 +3,51 @@
 ## Description
 In 2019 i started to do some experiments with hydroponics. So i decided to do some automation to control necessary pumps and have a better overview of the environmental conditions. Finally i came up with some electrical parts to recycle to a small automation solution with a Raspberry Pi. 
 
-To do all the communication with sensors and acquiring the data, i implemented a small python script that is reading gpios and I2C to gather all the data and finally publishes via MQTT. Currently i use Nodred for visualization and remote control.
+To do all the communication with sensors and acquiring the data, i implemented a small python script that is reading gpios and I2C to gather all the data and finally publishes via MQTT. Currently i use Nodred for remote control and grafana for visualization of the time series data.
 
 In addition to that, i wanted to do some monitoring and remote controlling, so i tried to grab my whole docker knowledge to create some small monitoring solution that is also easily deployable into the cloud or some vserver.
 
 
 ## Software
 
-### Requirements
+### General requirements
 
-The client software runs with python3. 
-For the monitoring setup you need docker.
+The client software runs with python3 on Raspberry Pi (currently just tested with a model 3B). 
+For the monitoring setup you need docker (at the server side).
 
-### Installation
+### Running
 
-TODO
+#### Install required python packages
+```
+cd HydroPynics
+pip3 install -r requirements.txt
+```
+
+#### To run as a certain user, add him to following groups
+```
+usermod -aG gpio <USER>
+usermod -aG i2c <USER>
+usermod -aG video <USER>   # for calling vcgencmd internally
+```
+
+#### Configuration
+Create a configuration file according to config_sample.json: 
+
+```json
+{
+    "general" :
+    {
+        "device_id" : "hydro01"          # device id used to annotate MQTT messages
+    },
+    "mqtt" :                             # MQTT server settings 
+    {
+        "host" : "localhost",         
+        "port" : 1883, 
+        "user" : "hydro01", 
+        "password" : "password"
+    }
+}
+```
 
 ### Monitoring
 
@@ -51,7 +81,7 @@ See the monitoring subfolder for detailed documentation.
 - NTCs: Some old ones from central heatings
 - Raspberry Pi 3B
 - Mounting: DIN Rail
-- Other parts: wires, LEDs, screws, glue, pcbs, etc.
+- Other parts: wires, LEDs, screws, glue, pcbs, PVC-pipes, etc.
 - Parts that are controlled: fish tank air pump, fish tank pump for circulation
 
 #### Printed parts
@@ -61,4 +91,4 @@ See the monitoring subfolder for detailed documentation.
 
 ### Wiring scheme
 
-A fritzing scheme is currently under construction ...
+Still to be done some day ...

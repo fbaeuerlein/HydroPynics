@@ -2,6 +2,8 @@
 
 This is the description to run a control and monitoring stack with docker. Inspired by https://github.com/ttncat/ttncat-docker-compose.
 
+![Some grafana dashboard](https://github.com/fbaeuerlein/HydroPynics/blob/master/images/dashboard.png)
+
 Following components are used:
 
 - Mosquitto MQTT broker for sending/receiving messages
@@ -29,7 +31,7 @@ Currently, for nodered, the credentials have to be entered manually if you want 
 
 ### Run `deploy.sh` and deploy the services
 
-Run `deploy.sh` within this folder with the modified configuration JSON file. A subfolder 'deployment' will be created, that contains the resulting docker-compose.yml and the required resources for docker-compose. So go folder deployment and run `docker-compse up (--build)` to start the services.
+Run `deploy.sh` within this folder with the modified configuration YAML file. A subfolder 'deployment' will be created, that contains the resulting docker-compose.yml and the required resources for docker-compose. So go folder deployment and run `docker-compse up (--build)` to start the services.
 
 ### Details of `deploy.sh`
 
