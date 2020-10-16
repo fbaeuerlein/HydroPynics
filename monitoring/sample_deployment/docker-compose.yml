@@ -1,0 +1,90 @@
+version: "3"
+
+services:
+
+  mosquitto:
+    container_name: hydropynics_mosquitto
+    image: eclipse-mosquitto
+    networks:
+      - hydropynics
+    ports:
+      - "1883:1883"
+    volumes:
+      - hydropynics_mosquitto_data:/mosquitto/data 
+      - ./mosquitto:/mosquitto/config
+      - hydropynics_mosquitto_log:/mosquitto/log
+    restart: on-failure
+
+
+  nodered:
+    container_name: hydropynics_nodered
+    command: --settings /data/settings.js
+    build: ./nodered
+    dns: 8.8.8.8  # needed because of DNS errors on npm install in dockerfile
+    networks:
+      - hydropynics
+    ports:
+      - "1880:1880"
+    volumes:
+      - hydropynics_nodered:/data 
+      - ./nodered/settings.js:/data/settings.js
+    restart: on-failure
+
+
+  influxdb:
+    container_name: hydropynics_influx
+    image: influxdb:1.7
+    networks:
+      - hydropynics
+
+    volumes:
+      - hydropynics_influxdb:/var/lib/influxdb
+
+    restart: on-failure
+    environment:
+      - INFLUXDB_DB=hydropynic    # seems not to work with 1.8 ?!
+      - INFLUXDB_READ_USER=reader
+      - INFLUXDB_READ_USER_PASSWORD=password
+      - INFLUXDB_WRITE_USER=writer
+      - INFLUXDB_WRITE_USER_PASSWORD=password
+
+  telegraf:
+    container_name: hydropynics_telegraf
+    image: "telegraf"
+    depends_on:
+      - influxdb
+    networks:
+      - hydropynics
+    volumes:
+      - ./telegraf/telegraf.conf:/etc/telegraf/telegraf.conf
+    restart: on-failure
+
+  grafana:
+    container_name: hydropynics_grafana
+    image: "grafana/grafana"
+    networks:
+      - hydropynics
+    ports:
+      - "3000:3000"
+    volumes:
+      - hydropynics_grafana:/var/lib/grafana
+      - ./grafana/:/etc/grafana/provisioning/datasources
+    environment:
+      - GF_INSTALL_PLUGINS=grafana-clock-panel,natel-discrete-panel,briangann-gauge-panel,vonage-status-panel,neocat-cal-heatmap-panel
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=password
+      - GF_SERVER_SERVE_FROM_SUB_PATH=true
+      - GF_SERVER_DOMAIN=localhost
+      - GF_SERVER_ROOT_URL=%(protocol)s://%(domain)s:%(http_port)s/    
+    restart: on-failure
+
+volumes:
+  hydropynics_nodered:
+  hydropynics_influxdb:
+  hydropynics_grafana:
+  hydropynics_mosquitto_data:
+  hydropynics_mosquitto_config:
+  hydropynics_mosquitto_log:
+
+networks:
+  hydropynics:

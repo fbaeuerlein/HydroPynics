@@ -1,0 +1,12 @@
+apiVersion: 1
+
+datasources:
+  - name: hydropynics_influx
+    type: influxdb
+    access: proxy
+    database: site
+    user: reader
+    password: password
+    url: http://hydropynics_influx:8086
+    jsonData:
+      httpMode: GET
